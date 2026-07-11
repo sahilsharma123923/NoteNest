@@ -4,8 +4,10 @@ const authMiddleware=require('../middleware/auth.middleware')
 
 const router=express.Router()
 
-router.post("/create-note",authMiddleware.authMiddleware,noteController.createNoteController);
-router.get("/getnotes",authMiddleware.authMiddleware,noteController.getAllNotesController)
-router.get("/notes/:id",authMiddleware.authMiddleware,noteController.getSingleNoteController)
+router.post("/",authMiddleware.authMiddleware,noteController.createNoteController);
+router.get("/",authMiddleware.authMiddleware,noteController.getAllNotesController)
+router.get("/:id",authMiddleware.authMiddleware,noteController.getSingleNoteController)
+router.put("/:id",authMiddleware.authMiddleware,noteController.updateNotecontroller)
+router.delete("/:id",authMiddleware.authMiddleware,noteController.deleteNoteController)
 
 module.exports=router

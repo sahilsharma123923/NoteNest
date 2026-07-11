@@ -76,8 +76,65 @@ async function getSingleNoteController(req, res) {
     }
 }
 
+// update Note
+async function updateNotecontroller(req,res) {
+
+    const noteId=req.params.id
+    const {content,title}=req.body
+
+    const note=await noteModel.findById(noteId)
+
+    if(!note){
+        return res.status(404).json({
+            message:"Note not found"
+        })
+    }
+    if(note.owner.toString() !== req.user._id.toString()){
+        return res.status(403).json({
+            message:"You are not authorized to access this note "
+        })
+    }
+    note.title=title;
+    note.content=content;
+
+    await note.save();
+
+    return res.status(200).json({
+        message:"Note updated successfully",
+        note
+    })
+}
+
+// Delete Note
+async function deleteNoteController(req,res){
+   const noteId=req.params.id
+
+   const note=await noteModel.findById(noteId)
+
+   if(!note){
+    return res.status(404).json({
+        message:"Note not found"
+    })
+   }
+
+   if(note.owner.toString() !== req.user._id.toString()){
+    return res.status(403).json({
+        message:"You are not authorized to acess this note"
+    })
+   }
+
+   await note.deleteOne();
+
+   return res.status(200).json({
+    message:"Note delete sucessfully"
+   })
+
+}
+
 module.exports = {
     createNoteController,
     getAllNotesController,
-    getSingleNoteController
+    getSingleNoteController,
+    updateNotecontroller,
+    deleteNoteController
 };
