@@ -10,7 +10,7 @@ async function userRegister(req,res) {
 
     if(isEmailExist){
         return res.status(422).json({
-            message:"User already exist with this email",
+            message:"User already exists",
             status:"Failed"
         })
     }
@@ -71,4 +71,22 @@ async function userLogin(req,res) {
     
 }
 
-module.exports={userRegister,userLogin}
+async function getUser(req, res) {
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({
+      message: "User not found"
+    });
+  }
+
+  return res.status(200).json({
+    message: "User found successfully",
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    }
+  });
+}
+module.exports={userRegister,userLogin,getUser}

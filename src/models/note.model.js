@@ -14,6 +14,14 @@ const noteSchema=new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         required:true,
         ref:"user"
+    },
+    tags:{
+       type:[String],
+       default:false
+    },
+    isPinned:{
+        type:Boolean,
+        default:false
     }
 },{
     timestamps:true

@@ -10,5 +10,7 @@ router.post("/register",authController.userRegister)
 
 router.post("/login",authController.userLogin)
 
+router.get("/getUser",authMiddleware.authMiddleware,authController.getUser)
+
 
 module.exports=router

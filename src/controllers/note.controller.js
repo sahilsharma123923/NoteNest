@@ -3,14 +3,26 @@ const noteModel = require("../models/note.model");
 // Create Note
 async function createNoteController(req, res) {
     try {
-        const { title, content } = req.body;
+        const { title, content ,tags } = req.body;
 
         const owner = req.user._id;
+
+        if(!title){
+            return res.status(400).json({
+                message:"Title is required"
+            })
+        }
+        if(!content){
+            return res.status(400).json({
+                message:"Content is required"
+            })
+        }
 
         const note = await noteModel.create({
             title,
             content,
-            owner
+            owner,
+            tags:tags || []
         });
 
         return res.status(201).json({
@@ -30,7 +42,7 @@ async function getAllNotesController(req, res) {
     try {
         const owner = req.user._id;
 
-        const notes = await noteModel.find({ owner });
+        const notes = await noteModel.find({ owner }).sort({isPinned:-1});
 
         return res.status(200).json({
             message: "Notes fetched successfully",
@@ -80,7 +92,13 @@ async function getSingleNoteController(req, res) {
 async function updateNotecontroller(req,res) {
 
     const noteId=req.params.id
-    const {content,title}=req.body
+    const {content,title,tags,isPinned}=req.body
+
+    if(!content && !title && !tags){
+        return res.status(400).json({
+            message:"No changes provided"
+        })
+    }
 
     const note=await noteModel.findById(noteId)
 
@@ -94,8 +112,11 @@ async function updateNotecontroller(req,res) {
             message:"You are not authorized to access this note "
         })
     }
-    note.title=title;
-    note.content=content;
+    
+    if(title) note.title=title;
+    if(content) note.content=content;
+    if(tags) note.tags=tags;
+    if(isPinned) note.isPinned=isPinned;
 
     await note.save();
 
@@ -130,11 +151,40 @@ async function deleteNoteController(req,res){
    })
 
 }
+// updte isPinned Note
+async function updateNotePinnedController(req,res) {
+     const noteId=req.params.id
+    const {isPinned}=req.body
+
+    const note=await noteModel.findById(noteId)
+
+    if(!note){
+        return res.status(404).json({
+            message:"Note not found"
+        })
+    }
+    if(note.owner.toString() !== req.user._id.toString()){
+        return res.status(403).json({
+            message:"You are not authorized to access this note "
+        })
+    }
+      
+    note.isPinned=isPinned ;
+
+    await note.save();
+
+    return res.status(200).json({
+        message:"Note updated successfully",
+        note
+    })
+
+}
 
 module.exports = {
     createNoteController,
     getAllNotesController,
     getSingleNoteController,
     updateNotecontroller,
-    deleteNoteController
+    deleteNoteController,
+    updateNotePinnedController
 };
