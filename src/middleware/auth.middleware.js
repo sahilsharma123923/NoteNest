@@ -10,7 +10,7 @@ async function authMiddleware(req,res,next) {
             message:"Unauthorized access, token is missing"
         })
     }
-
+    
     try{
         const decoded=jwt.verify(token,process.env.JWT_SECRET)
     

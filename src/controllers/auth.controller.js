@@ -2,6 +2,7 @@ const userModel=require('../models/user.model')
 const jwt=require('jsonwebtoken')
 
 async function userRegister(req,res) {
+    
     const{email,name,password}=req.body
 
     const isEmailExist=await userModel.findOne({
